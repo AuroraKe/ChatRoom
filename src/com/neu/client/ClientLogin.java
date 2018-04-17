@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.Socket;
 import java.util.Properties;
 
 import javax.swing.ImageIcon;
@@ -15,35 +14,29 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import com.neu.controller.UserController;
 import com.neu.util.FileLoad;
 import com.neu.util.Sound;
-
 
 public class ClientLogin extends JFrame{
 	
 	private static final long serialVersionUID = 2017092610283401L;
 	private JTextField username; //用户名
 	private JPasswordField password; //密码
+	private UserController userController = new UserController();
 	
-	/**
-	 * Sends a message to the specified IP address, the specified
-	 * port number.
-	 * The {@code String} represent this host's IP {@code address}.
-	 */
-	private static String address = "172.28.210.152"; //指定IP地址
-	private static int port = 8888; //向指定端口号发送消息
-
 	//加载 配置文件
 	FileLoad load = new FileLoad();
 	Properties properties = load.loadProperties("client.properties");
-	
 	public ClientLogin() {
 		setTitle("登录");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setBounds(350, 250, 450, 300);
 		setIconImage(new ImageIcon(properties.getProperty("logo")).getImage());
+		
 		JPanel contentPane = new JPanel(){
 			//当前时间加上两位的序列号
 			private static final long serialVersionUID = 2017092610283401L;
@@ -105,22 +98,58 @@ public class ClientLogin extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String name = username.getText();
-				try {
-					//定义本机ip地址和端口号，用来接收和发送消息
-					//localhost->localhost:127.0.0.1
-					Socket socket = new Socket(address, port);
-					//使登录按钮失效
-					login.setEnabled(false);
-					//初始化聊天室界面
-					Client client = new Client(name, socket);
-					//显示聊天室界面
-					client.setVisible(true);
-//					Sound.stop();
-					//隐藏登录界面
-					setVisible(false);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+				String pwd = new String(password.getPassword());
+				
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						Connect connect = Connect.getConnect();
+						//在swing编程中有一个编程原则：所有的界面相关的更新，都应该在 EDT 上执行，
+						//否则会导致界面绘制出现不稳定性错误。
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								lblNewLabel.setText("连接中...");
+								login.setEnabled(false);
+							}
+						});
+						//检查服务器是否启动
+						if(connect.isConnect()){
+							//检查用户名和密码的合法性
+							if(userController.login(name, pwd)){
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										//初始化聊天室界面
+										Client client = new Client(connect, name);
+										
+										//显示聊天室界面
+										client.setVisible(true);
+										//隐藏登录界面
+										setVisible(false);
+									}
+								});
+								
+							}else{
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										login.setEnabled(true);
+										lblNewLabel.setText("用户名或密码错误！");
+									}
+								});
+							}
+						}else{
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									login.setEnabled(true);
+									lblNewLabel.setText("连接服务器失败");
+								}
+							});
+						}
+					}	
+				}).start();
 			}
 		});
 	}
@@ -132,5 +161,6 @@ public class ClientLogin extends JFrame{
 				new ClientLogin().setVisible(true);
 			}
 		});
-	}
+		
+	}	
 }

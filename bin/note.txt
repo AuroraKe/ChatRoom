@@ -1,0 +1,12 @@
+com.neu.dao 包下的类都是用来查询数据的
+	com.neu.dao.Query 接口，定义了一组用于查询数据库的方法
+		-- AbstractQuery 抽象类，实现了Query接口，并且增加了四个方法，其中fillStatement()方法用于填充sql语句的
+		占位符，retriveOutParameter用于向存储过程或函数中的输出参数赋值。
+			--BasicQuery 查询所用的类，继承了AbstractQuery抽象类，实现了通用的CRUD操作。
+			
+	com.neu.dao.OutParameter 一个用于声明存储过程或函数中的out类型的参数，其方法getValue()可以获取存储过程的输出参数的值。
+	
+	com.neu.dao.AbstractPetrichorDataSource 一个抽象类，实现了DataSource接口
+		--PetrichorDataSource 继承了AbstractPetrichorDataSource抽象类，可以获取数据源。
+com.neu.dao.handler 该包下的类用来封装查询的结果
+	

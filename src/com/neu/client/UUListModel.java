@@ -1,14 +1,14 @@
 package com.neu.client;
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-class UUListModel extends AbstractListModel {
+class UUListModel extends AbstractListModel<String> {
 	private static final long serialVersionUID = 2017092716063402L;
-	private Vector<String> vector;
+	private List<String> vector;
 
-	public UUListModel(Vector<String> vector) {
+	public UUListModel(List<String> vector) {
 		this.vector = vector;
 	}
 
@@ -24,7 +24,7 @@ class UUListModel extends AbstractListModel {
 	 * 返回索引index的值
 	 */
 	@Override
-	public Object getElementAt(int index) {
+	public String getElementAt(int index) {
 		return vector.get(index);
 	}
 
