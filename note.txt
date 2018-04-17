@@ -1,0 +1,18 @@
+1.登录时先启动服务端com.neu.server.Server
+2.然后启动客户端com.neu.client.ClientLogin，登录即可
+3.配置文件(client.properties)说明
+	logo：客户端图标
+	login：登录时的背景图片
+	chatingRoom：聊天室的背景图片
+	play：播放按钮（未用）
+	pause：暂停按钮（未用）
+	
+	以Mu结尾的是背景音乐：
+	loginMu：登录时的背景音乐
+	onlineMu：有人上线时的提示音
+	chatMu：收到消息时的提示音
+	uploadMu：上传或下载完成时的提示音
+	musicMu：想要听的音乐
+4.util包下是一些工具类
+5.bean下的类是传输信息使用的
+6.test和exception包下的类都是测试使用，跟项目无关
